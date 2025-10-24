@@ -3,10 +3,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Byte-Sized Battle - Start Quiz</title>
+<title>Byte-Sized Battle - Countdown</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"/>
-<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
 <style>
     body {
         background-color: #121212;
@@ -24,60 +23,37 @@
         background-color: #1e293b;
         border-radius: 12px;
         padding: 50px;
-        width: 500px;
+        width: 550px;
         box-shadow: 0 0 15px rgba(0,0,0,0.5);
         text-align: center;
     }
-    .logo {
-        display: inline-block;
-        background: linear-gradient(90deg, #2563eb, #3b82f6);
-        padding: 20px 30px;
-        border-radius: 12px;
+    .title {
         font-weight: 800;
         font-size: 2rem;
         letter-spacing: 1px;
-        color: white;
-        margin-bottom: 20px;
+        color: #ffffff;
         text-transform: uppercase;
-        text-shadow: 0 0 10px #3b82f6;
     }
     .subtitle {
         color: #9ca3af;
-        margin-bottom: 25px;
-    }
-    input {
-        width: 100%;
-        padding: 12px;
-        margin: 10px 0;
-        border-radius: 8px;
-        border: none;
-        background-color: #2d3748;
-        color: #e0e0e0;
+        margin-bottom: 30px;
         font-size: 1rem;
     }
-    input:focus {
-        outline: none;
-        border: 1px solid #3b82f6;
-        background-color: #334155;
+    .timer {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 3rem;
+        font-weight: bold;
+        color: #60a5fa;
+        letter-spacing: 2px;
+        margin: 20px 0;
     }
-    .btn {
-        background-color: #3b82f6;
-        color: white;
-        font-weight: 600;
-        border: none;
-        padding: 12px 24px;
-        border-radius: 8px;
-        cursor: pointer;
-        margin-top: 15px;
-        transition: background-color 0.3s ease;
-        width: 100%;
-    }
-    .btn:hover {
-        background-color: #2563eb;
+    .label {
+        font-size: 1rem;
+        color: #9ca3af;
     }
     .footer {
         margin-top: 25px;
-        font-size: 0.85em;
+        font-size: 0.9em;
         color: #9ca3af;
     }
 </style>
@@ -85,21 +61,14 @@
 <body>
 
 <div class="card">
-    <div class="logo">
-        <i class="fas fa-bug"></i> BYTE-SIZED BATTLE
-    </div>
+    <div class="title">Byte-Sized Battle</div>
     <p class="subtitle">Spot the Bug. Secure the Code.</p>
 
-    <p class="text-gray-400 text-sm mb-6">
-        Welcome to <strong>Byte-Sized Battle</strong> — a coding challenge where your security instincts take center stage.<br/>
-        Enter your details to begin!
-    </p>
+    <h2 class="text-xl text-gray-300 mb-4">Quiz Starts On</h2>
+    <p class="text-lg text-blue-400 mb-4">🗓️ 27th October, 11:00 AM IST</p>
 
-    <form id="startForm" onsubmit="return startQuiz()">
-        <input type="text" id="name" placeholder="Employee Name" required/>
-        <input type="email" id="email" placeholder="Employee Email ID" required/>
-        <button type="submit" class="btn">Start Quiz</button>
-    </form>
+    <div id="timer" class="timer">00:00:00</div>
+    <p class="label">Hours : Minutes : Seconds</p>
 
     <div class="footer">
         Stay Secure · Think Before You Code
@@ -107,23 +76,31 @@
 </div>
 
 <script>
-function startQuiz() {
-    const name = document.getElementById('name').value.trim();
-    const email = document.getElementById('email').value.trim();
+// Set the quiz start date and time (IST)
+const startDate = new Date('2025-10-27T11:00:00+05:30').getTime();
 
-    if (!name || !email) {
-        alert('Please enter both name and email.');
-        return false;
+function updateTimer() {
+    const now = new Date().getTime();
+    const diff = startDate - now;
+
+    if (diff <= 0) {
+        document.getElementById('timer').innerHTML = "00:00:00";
+        document.querySelector('.subtitle').innerText = "The battle has begun!";
+        document.querySelector('.subtitle').style.color = "#22c55e";
+        clearInterval(timerInterval);
+        return;
     }
 
-    // Store employee info locally (optional)
-    localStorage.setItem('employeeName', name);
-    localStorage.setItem('employeeEmail', email);
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
 
-    // Redirect to the first quiz page
-    window.location.href = 'ChooseProgLanguage.html'; // change this if needed
-    return false;
+    document.getElementById('timer').innerHTML = 
+        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
+
+const timerInterval = setInterval(updateTimer, 1000);
+updateTimer();
 </script>
 
 </body>
