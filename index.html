@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Byte-Sized Battle - Countdown</title>
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"/>
@@ -76,31 +76,37 @@
 </div>
 
 <script>
-// Set the quiz start date and time (IST)
-const startDate = new Date('2025-10-27T11:00:00+05:30').getTime();
+// Target start: 27 Oct 2025 11:00:00 IST (UTC+05:30)
+const targetTime = new Date('2025-10-27T11:00:00+05:30').getTime();
+
+function formatTwo(n) { return String(n).padStart(2, '0'); }
 
 function updateTimer() {
-    const now = new Date().getTime();
-    const diff = startDate - now;
+    const now = Date.now();
+    let diff = targetTime - now;
 
     if (diff <= 0) {
-        document.getElementById('timer').innerHTML = "00:00:00";
-        document.querySelector('.subtitle').innerText = "The battle has begun!";
-        document.querySelector('.subtitle').style.color = "#22c55e";
-        clearInterval(timerInterval);
+        document.getElementById('timer').textContent = "00:00:00";
+        const sub = document.querySelector('.subtitle');
+        sub.textContent = "The battle has begun!";
+        sub.style.color = "#22c55e";
+        clearInterval(intervalId);
         return;
     }
 
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-    const seconds = Math.floor((diff / 1000) % 60);
+    // total hours can be >= 24
+    const totalSeconds = Math.floor(diff / 1000);
+    const hours = Math.floor(totalSeconds / 3600); // total hours remaining
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
 
-    document.getElementById('timer').innerHTML = 
-        `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    document.getElementById('timer').textContent =
+        `${String(hours)}:${formatTwo(minutes)}:${formatTwo(seconds)}`;
 }
 
-const timerInterval = setInterval(updateTimer, 1000);
+// update every second
 updateTimer();
+const intervalId = setInterval(updateTimer, 1000);
 </script>
 
 </body>
