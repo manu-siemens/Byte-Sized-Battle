@@ -107,9 +107,8 @@
 </div>
 
 <script type="module">
-function startQuiz() {
 
-    // Import the functions you need from the SDKs you need
+	// Import the functions you need from the SDKs you need
 	  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
 	  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
 	  // TODO: Add SDKs for Firebase products that you want to use
@@ -132,24 +131,24 @@ function startQuiz() {
 	  const app = initializeApp(firebaseConfig);
 	  const db = firebase.database();
 	  const analytics = getAnalytics(app);
+	  
+	function startQuiz() {
+		const name = document.getElementById('name').value.trim();
+		const email = document.getElementById('email').value.trim();
 
+		if (!name || !email) {
+			alert('Please enter both name and email.');
+			return false;
+		}
 
-    const name = document.getElementById('name').value.trim();
-    const email = document.getElementById('email').value.trim();
+		// Store employee info locally (optional)
+		localStorage.setItem('employeeName', name);
+		localStorage.setItem('employeeEmail', email);
 
-    if (!name || !email) {
-        alert('Please enter both name and email.');
-        return false;
-    }
-
-    // Store employee info locally (optional)
-    localStorage.setItem('employeeName', name);
-    localStorage.setItem('employeeEmail', email);
-
-    // Redirect to the first quiz page
-    window.location.href = 'ChooseProgLanguage.html'; // change this if needed
-    return false;
-}
+		// Redirect to the first quiz page
+		window.location.href = 'ChooseProgLanguage.html'; // change this if needed
+		return false;
+	}
 </script>
 
 </body>
