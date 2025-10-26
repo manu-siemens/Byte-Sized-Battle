@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cyber Sleuth Challenge - Q2</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&amp;family=Montserrat:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+        font-family: 'Montserrat', sans-serif;
+        margin: 0;
+        padding: 0;
+        width: 1280px;
+        min-height: 720px;
+    }
+    .container {
+        width: 1280px;
+        min-height: 720px;
+        padding: 40px;
+        box-sizing: border-box;
+    }
+    .header {
+        border-bottom: 2px solid #2563eb;
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+    }
+    .code-block {
+        font-family: 'Roboto Mono', monospace;
+        background-color: #1e1e1e;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        border-left: 4px solid #2563eb;
+        color: #e0e0e0;
+    }
+    .keyword { color: #569cd6; }
+    .option {
+        background-color: #1e293b;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-left: 4px solid #3b82f6;
+        transition: all 0.18s ease;
+        cursor: pointer;
+        user-select: none;
+    }
+    .option:hover { background-color: #2d3748; border-left: 4px solid #60a5fa; }
+    .option.selected { background-color: #0f172a; border-left: 4px solid #93c5fd; box-shadow: 0 0 0 4px rgba(59,130,246,0.06) inset; }
+    .option-letter {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        background-color: #3b82f6;
+        color: white;
+        text-align: center;
+        line-height: 30px;
+        border-radius: 50%;
+        margin-right: 10px;
+        font-weight: bold;
+    }
+    .footer {
+        margin-top: 30px;
+        font-size: 0.9em;
+        color: #9ca3af;
+    }
+    .language-badge {
+        background-color: #2563eb;
+        color: white;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-size: 14px;
+        display: inline-block;
+        margin-left: 15px;
+    }
+    #selection-msg { margin-top: 8px; color: #a3e635; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1 class="text-3xl font-bold text-blue-400">Cyber Sleuth Challenge <span class="text-white">02/10</span></h1>
+        <h2 class="text-xl mt-2">Spot, Suggest, Secure!</h2>
+    </div>
+
+    <div class="challenge-content">
+        <div class="flex justify-between items-center">
+            <h3 class="text-2xl font-semibold text-yellow-400">Identify the Vulnerability</h3>
+            <span class="language-badge"><i class="fas fa-code mr-1"></i> Type Script Language</span>
+        </div>
+
+        <div class="code-block text-lg">
+			fetch("https://api.example.com/data?id=" + userId)
+				.then(res => res.json());
+		</div>
+		<h3 class="text-xl font-semibold text-blue-400 mt-8 mb-4">Which fix would address the security vulnerability?</h3>
+
+		<div class="options" id="options-container">
+			<div class="option" data-value="A">
+				<span class="option-letter">A</span>
+				<code>fetch(`https://api.example.com/data?id=${encodeURIComponent(userId)}`);</code>
+			</div>
+			<div class="option" data-value="B">
+				<span class="option-letter">B</span>
+				<code>fetch("https://api.example.com/data?" + userId);</code>
+			</div>
+			<div class="option" data-value="C">
+				<span class="option-letter">C</span>
+				<code>fetch(userId);</code>
+			</div>
+			<div class="option" data-value="D">
+				<span class="option-letter">D</span>
+				<code>console.log(userId);</code>
+			</div>
+		</div>
+		<div id="selection-msg" aria-live="polite"></div>
+		<div class="mt-8 bg-gray-800 p-4 rounded-lg">
+			<p class="text-gray-300"><i class="fas fa-lightbulb text-yellow-400 mr-2"></i><strong>Recommendation:</strong> Always encode dynamic parameters in URLs using <code>encodeURIComponent()</code> to prevent injection attacks.</p>
+		</div>
+
+
+    </div>
+
+    <div class="footer text-right">
+        <button id="next-btn" type="button" class="bg-blue-500 text-white px-4 py-2 rounded-3xl font-bold">Next</button>
+    </div>
+
+    <div class="footer text-left">
+        <p>October Cybersecurity Awareness Month</p>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const optionsContainer = document.getElementById('options-container');
+    const selectionMsg = document.getElementById('selection-msg');
+    const nextBtn = document.getElementById('next-btn');
+
+    // Key to use in localStorage for this question (update per question)
+    const storageKey = 'TS_q2';
+
+    // try to load previously selected answer (if any)
+    let selectedAnswer = null;
+    try {
+        selectedAnswer = localStorage.getItem(storageKey);
+    } catch (e) {
+        console.warn('Could not read localStorage (maybe file:// or private mode):', e);
+        selectedAnswer = null;
+    }
+
+    // helper to visually select an option element and save value
+    function applySelection(optionEl, save = true) {
+        // remove previous selection
+        document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+        if (!optionEl) {
+            selectionMsg.textContent = '';
+            selectedAnswer = null;
+            return;
+        }
+        optionEl.classList.add('selected');
+        selectedAnswer = optionEl.dataset.value || null;
+        selectionMsg.textContent = selectedAnswer ? `Selected: ${selectedAnswer}` : '';
+        if (save && selectedAnswer !== null) {
+            try {
+                localStorage.setItem(storageKey, String(selectedAnswer));
+                console.log(`Saved ${storageKey} =`, selectedAnswer);
+            } catch (e) {
+                console.error('localStorage.setItem failed:', e);
+                // don't block UI if storage fails — keep value in memory
+            }
+        }
+    }
+
+    // event delegation: capture clicks anywhere inside options container,
+    // and find nearest .option parent (works when clicking <code> child)
+    optionsContainer.addEventListener('click', (ev) => {
+        const opt = ev.target.closest('.option');
+        if (!opt) return;
+        applySelection(opt, true);
+    });
+
+    // pre-select if stored previously
+    if (selectedAnswer) {
+        const prev = document.querySelector(`.option[data-value="${selectedAnswer}"]`);
+        if (prev) applySelection(prev, false); // already saved, so no need to save again
+    }
+
+    // Next button: validate and redirect (you can keep saving again for safety)
+    nextBtn.addEventListener('click', () => {
+        if (!selectedAnswer) {
+            alert('Please select an answer.');
+            return;
+        }
+        try {
+            localStorage.setItem(storageKey, String(selectedAnswer));
+        } catch (e) {
+            console.warn('Could not persist answer to localStorage:', e);
+            // continue anyway — we keep selectedAnswer in memory
+        }
+
+        // redirect to next page (update path if needed)
+        window.location.href = 'TS_3.html';
+    });
+});
+</script>
+</body>
+</html>
