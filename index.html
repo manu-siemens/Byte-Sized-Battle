@@ -98,7 +98,7 @@
     <form id="startForm" onsubmit="return startQuiz()">
         <input type="text" id="name" placeholder="Employee Name" required/>
         <input type="email" id="email" placeholder="Employee Email ID" required/>
-        <button type="submit" class="btn">Start Quiz</button>
+        <button id="submitbutton" type="submit" class="btn">Start Quiz</button>
     </form>
 
     <div class="footer">
@@ -116,6 +116,10 @@
 
 	  // Your web app's Firebase configuration
 	  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+	  let app;
+	  
+	  async function initFirebase(){
+	  if (!app){
 	  const firebaseConfig = {
 		apiKey: "AIzaSyCDxtG36Qeyhh1nfRypGPDOdvfQgO9_oIA",
 		authDomain: "byte-sized-battle.firebaseapp.com",
@@ -131,7 +135,15 @@
 	  const app = initializeApp(firebaseConfig);
 	  const db = firebase.database();
 	  const analytics = getAnalytics(app);
-	  
+	  }
+	}
+	
+	// Your button click logic
+  document.getElementById("submitbutton").addEventListener("click", async () => {
+    await initFirebase(); // ensure Firebase is initialized first
+    startQuiz(); // now safe to run your main function
+  });
+  
 	function startQuiz() {
 		const name = document.getElementById('name').value.trim();
 		const email = document.getElementById('email').value.trim();
