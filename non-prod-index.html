@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Byte-Sized Battle - Countdown</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+        font-family: 'Montserrat', sans-serif;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .card {
+        background-color: #1e293b;
+        border-radius: 12px;
+        padding: 50px;
+        width: 550px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        text-align: center;
+    }
+    .title {
+        font-weight: 800;
+        font-size: 2rem;
+        letter-spacing: 1px;
+        color: #ffffff;
+        text-transform: uppercase;
+    }
+    .subtitle {
+        color: #9ca3af;
+        margin-bottom: 30px;
+        font-size: 1rem;
+    }
+    .timer {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 3rem;
+        font-weight: bold;
+        color: #60a5fa;
+        letter-spacing: 2px;
+        margin: 20px 0;
+    }
+    .label {
+        font-size: 1rem;
+        color: #9ca3af;
+    }
+    .footer {
+        margin-top: 25px;
+        font-size: 0.9em;
+        color: #9ca3af;
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <div class="title">Byte-Sized Battle</div>
+    <p class="subtitle">Spot the Bug. Secure the Code.</p>
+
+    <h2 class="text-xl text-gray-300 mb-4">Quiz Starts On</h2>
+    <p class="text-lg text-blue-400 mb-4">🗓️ 27th October, 11:00 AM IST</p>
+
+    <div id="timer" class="timer">00:00:00</div>
+    <p class="label">Hours : Minutes : Seconds</p>
+
+    <div class="footer">
+        Stay Secure · Think Before You Code
+    </div>
+</div>
+
+<script>
+// Target start: 27 Oct 2025 11:00:00 IST (UTC+05:30)
+const targetTime = new Date('2025-10-27T11:00:00+05:30').getTime();
+
+function formatTwo(n) { return String(n).padStart(2, '0'); }
+
+function updateTimer() {
+    const now = Date.now();
+    let diff = targetTime - now;
+
+    if (diff <= 0) {
+        document.getElementById('timer').textContent = "00:00:00";
+        const sub = document.querySelector('.subtitle');
+        sub.textContent = "The battle has begun!";
+        sub.style.color = "#22c55e";
+        clearInterval(intervalId);
+        return;
+    }
+
+    // total hours can be >= 24
+    const totalSeconds = Math.floor(diff / 1000);
+    const hours = Math.floor(totalSeconds / 3600); // total hours remaining
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+
+    document.getElementById('timer').textContent =
+        `${String(hours)}:${formatTwo(minutes)}:${formatTwo(seconds)}`;
+}
+
+// update every second
+updateTimer();
+const intervalId = setInterval(updateTimer, 1000);
+</script>
+
+</body>
+</html>
