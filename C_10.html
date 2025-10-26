@@ -17,8 +17,17 @@
         width: 1280px;
         min-height: 720px;
     }
-    .container { width: 1280px; min-height: 720px; padding: 40px; box-sizing: border-box; }
-    .header { border-bottom: 2px solid #2563eb; padding-bottom: 10px; margin-bottom: 30px; }
+    .container {
+        width: 1280px;
+        min-height: 720px;
+        padding: 40px;
+        box-sizing: border-box;
+    }
+    .header {
+        border-bottom: 2px solid #2563eb;
+        padding-bottom: 10px;
+        margin-bottom: 30px;
+    }
     .code-block {
         font-family: 'Roboto Mono', monospace;
         background-color: #1e1e1e;
@@ -53,7 +62,11 @@
         margin-right: 10px;
         font-weight: bold;
     }
-    .footer { margin-top: 30px; font-size: 0.9em; color: #9ca3af; }
+    .footer {
+        margin-top: 30px;
+        font-size: 0.9em;
+        color: #9ca3af;
+    }
     .language-badge {
         background-color: #2563eb;
         color: white;
@@ -107,6 +120,7 @@
 			</div>
 		</div>
 
+
         <div id="selection-msg" aria-live="polite"></div>
 
         <div class="mt-8 bg-gray-800 p-4 rounded-lg">
@@ -124,90 +138,152 @@
 	<div id="score" class="mt-8 text-xl font-bold"></div>
 </div>
 
-<!-- ✅ Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
 
-	// ✅ Initialize Firebase
-	const firebaseConfig = {
-	  apiKey: "YOUR_API_KEY",
-	  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-	  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-	  projectId: "YOUR_PROJECT_ID",
-	  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-	  messagingSenderId: "YOUR_SENDER_ID",
-	  appId: "YOUR_APP_ID"
-	};
-
-	const app = firebase.initializeApp(firebaseConfig);
-	const db = firebase.database();
-
-	// ✅ Correct answers
+	// Correct answers for all 10 questions
 	const correctAnswers = {
-		c_q1: "A", c_q2: "A", c_q3: "A", c_q4: "A", c_q5: "A",
-		c_q6: "A", c_q7: "A", c_q8: "A", c_q9: "A", c_q10:"A"
+		c_q1: "A",
+		c_q2: "A",
+		c_q3: "A",
+		c_q4: "A",
+		c_q5: "A",
+		c_q6: "A",
+		c_q7: "A",
+		c_q8: "A",
+		c_q9: "A",
+		c_q10:"A"
 	};
+		
+    const optionsContainer = document.getElementById('options-container');
+    const selectionMsg = document.getElementById('selection-msg');
+    const nextBtn = document.getElementById('next-btn');
 
-	const optionsContainer = document.getElementById('options-container');
-	const selectionMsg = document.getElementById('selection-msg');
-	const nextBtn = document.getElementById('next-btn');
-	const storageKey = 'c_q10';
-	let selectedAnswer = localStorage.getItem(storageKey);
+    // Key to use in localStorage for this question (update per question)
+    const storageKey = 'c_q10';
 
-	function applySelection(optionEl, save = true) {
-		document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
-		if (!optionEl) return;
-		optionEl.classList.add('selected');
-		selectedAnswer = optionEl.dataset.value;
-		selectionMsg.textContent = `Selected: ${selectedAnswer}`;
-		if (save) localStorage.setItem(storageKey, selectedAnswer);
-	}
+    // try to load previously selected answer (if any)
+    let selectedAnswer = null;
+    try {
+        selectedAnswer = localStorage.getItem(storageKey);
+    } catch (e) {
+        console.warn('Could not read localStorage (maybe file:// or private mode):', e);
+        selectedAnswer = null;
+    }
 
-	optionsContainer.addEventListener('click', ev => {
-		const opt = ev.target.closest('.option');
-		if (opt) applySelection(opt);
-	});
+    // helper to visually select an option element and save value
+    function applySelection(optionEl, save = true) {
+        // remove previous selection
+        document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+        if (!optionEl) {
+            selectionMsg.textContent = '';
+            selectedAnswer = null;
+            return;
+        }
+        optionEl.classList.add('selected');
+        selectedAnswer = optionEl.dataset.value || null;
+        selectionMsg.textContent = selectedAnswer ? `Selected: ${selectedAnswer}` : '';
+        if (save && selectedAnswer !== null) {
+            try {
+                localStorage.setItem(storageKey, String(selectedAnswer));
+                console.log(`Saved ${storageKey} =`, selectedAnswer);
+            } catch (e) {
+                console.error('localStorage.setItem failed:', e);
+                // don't block UI if storage fails — keep value in memory
+            }
+        }
+    }
 
-	if (selectedAnswer) {
-		const prev = document.querySelector(`.option[data-value="${selectedAnswer}"]`);
-		if (prev) applySelection(prev, false);
-	}
+    // event delegation: capture clicks anywhere inside options container,
+    // and find nearest .option parent (works when clicking <code> child)
+    optionsContainer.addEventListener('click', (ev) => {
+        const opt = ev.target.closest('.option');
+        if (!opt) return;
+        applySelection(opt, true);
+    });
 
-	nextBtn.addEventListener('click', async () => {
-		if (!selectedAnswer) {
-			alert('Please select an answer.');
-			return;
-		}
-		localStorage.setItem(storageKey, selectedAnswer);
+    // pre-select if stored previously
+    if (selectedAnswer) {
+        const prev = document.querySelector(`.option[data-value="${selectedAnswer}"]`);
+        if (prev) applySelection(prev, false); // already saved, so no need to save again
+    }
 
-		let score = 0;
+    // Next button: validate and redirect (you can keep saving again for safety)
+    nextBtn.addEventListener('click', () => {
+        if (!selectedAnswer) {
+            alert('Please select an answer.');
+            return;
+        }
+        try {
+            localStorage.setItem(storageKey, String(selectedAnswer));
+        } catch (e) {
+            console.warn('Could not persist answer to localStorage:', e);
+            // continue anyway — we keep selectedAnswer in memory
+        }
+
+        // redirect to next page (update path if needed)
+        let score = 0;
 		for (let i = 1; i <= 10; i++) {
 			const userAnswer = localStorage.getItem('c_q' + i);
-			if (userAnswer === correctAnswers['c_q' + i]) score++;
+			if (userAnswer === correctAnswers['c_q' + i]) {
+				score++;
+			}
 		}
-
+        //document.getElementById('score').innerText = `Your Score: ${score} / 10`;
+		
+		
+		/*// After calculating the score
 		const name = localStorage.getItem('quiz_name') || prompt('Enter your name:');
-		const email = localStorage.getItem('quiz_email') || prompt('Enter your email:');
+		localStorage.setItem('quiz_name', name);
 
-		// ✅ Store to Firebase
-		try {
-			await firebase.database().ref('quizScores/').push({
-				name,
-				email,
-				score,
-				timestamp: Date.now()
-			});
-			alert(`✅ Your score (${score}/10) has been submitted!`);
-			document.getElementById('score').innerText = `Your Score: ${score} / 10`;
-		} catch (err) {
-			console.error('❌ Error submitting to Firebase:', err);
-			alert('Failed to submit score. Please retry later.');
-		}
-	});
-});
+		fetch('https://script.google.com/macros/s/AKfycbzLzra7OZQIBcfIVJL-H0YrLJWX-vek5G_KAvMgcFklS-JkSwkvoqUgBXLI-1Dya2Tn/exec', {
+		  method: 'POST',
+		  mode: 'no-cors',
+		  headers: { 'Content-Type': 'application/json' },
+		  body: JSON.stringify({ name: name, score: score })
+		}).then(() => {
+		  alert(`Your score (${score}/10) has been submitted to the leaderboard!`);
+		});*/
+		
+		
+		/*
+		fetch('https://docs.google.com/forms/d/e/1FAIpQLScw-WW5WwAEGP2MiTljvwEwfUGJ5wVYa-FugLrHECMyPvNq3g/viewform?usp=pp_url', {
+		  method: 'POST',
+		  body: new URLSearchParams({
+			'entry.1234567890': name,
+			'entry.9876543210': score
+		  })
+		});
+		*/
+		
+	  
+	  //async function submitScore(name, score) {
+	  const url = "https://script.google.com/macros/s/AKfycbxMRToKrU5OJrOwVCKwzQPEoEA7si0cpBzyZkD_cVJUsSG0B3ymaqfJn3Nxti0qbGKHrQ/exec";
+	  const params = new URLSearchParams({ name, score });
+
+	  try {
+		const res = fetch(url, {
+		  method: "POST",
+		  mode: "no-cors", // avoids CORS block
+		  headers: { "Content-Type": "application/x-www-form-urlencoded" },
+		  body: params
+		});
+		alert(`✅ Your score (${score}/10) has been submitted!`);
+	  } catch (err) {
+		console.error("❌ Submission failed:", err);
+		alert("Submission failed. Please retry later.");
+	  }
+	//} 
+	
+	firebase.database().ref('quizScores/').push({
+	  name: 'Test User',
+	  email: 'test@example.com',
+	  score: 7,
+	  timestamp: Date.now()
+	}).then(() => console.log('pushed')).catch(err => console.error(err));
+	
+    });
+});       
 </script>
 </body>
 </html>
