@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Leaderboard - Byte-Sized Battle</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white p-10">
+  <h1 class="text-3xl font-bold text-blue-400 mb-6">Byte-Sized Battle Leaderboard</h1>
+  <table id="leaderboard" class="min-w-full bg-gray-800 rounded-lg overflow-hidden">
+    <thead class="bg-blue-600">
+      <tr>
+        <th class="px-6 py-3 text-left">Rank</th>
+        <th class="px-6 py-3 text-left">Name</th>
+        <th class="px-6 py-3 text-left">Score</th>
+        <th class="px-6 py-3 text-left">Date</th>
+      </tr>
+    </thead>
+    <tbody id="leaderboard-body"></tbody>
+  </table>
+
+  <script>
+    const sheetURL = "https://docs.google.com/spreadsheets/d/AKfycbxMRToKrU5OJrOwVCKwzQPEoEA7si0cpBzyZkD_cVJUsSG0B3ymaqfJn3Nxti0qbGKHrQ/gviz/tq?tqx=out:json";
+
+    fetch(sheetURL)
+      .then(res => res.text())
+      .then(text => {
+        const json = JSON.parse(text.substr(47).slice(0, -2));
+        const rows = json.table.rows.map(r => ({
+          date: r.c[0]?.f || '',
+          name: r.c[1]?.v || '',
+          score: parseInt(r.c[2]?.v || 0)
+        }));
+
+        rows.sort((a, b) => b.score - a.score);
+        const tbody = document.getElementById('leaderboard-body');
+        rows.forEach((r, i) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="px-6 py-2">${i + 1}</td>
+            <td class="px-6 py-2">${r.name}</td>
+            <td class="px-6 py-2">${r.score}</td>
+            <td class="px-6 py-2">${r.date}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      });
+  </script>
+</body>
+</html>
