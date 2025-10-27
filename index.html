@@ -24,7 +24,7 @@
         background-color: #1e293b;
         border-radius: 12px;
         padding: 50px;
-        width: 500px;
+        width: 550px;
         box-shadow: 0 0 15px rgba(0,0,0,0.5);
         text-align: center;
     }
@@ -80,6 +80,33 @@
         font-size: 0.85em;
         color: #9ca3af;
     }
+    .instructions {
+        text-align: left;
+        background-color: #111827;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        font-size: 0.95rem;
+    }
+    .instructions h3 {
+        font-weight: 700;
+        color: #3b82f6;
+        margin-bottom: 10px;
+    }
+    .instructions ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    .instructions li {
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+    }
+    .instructions li i {
+        color: #60a5fa;
+        margin-right: 8px;
+    }
 </style>
 </head>
 <body>
@@ -90,14 +117,26 @@
     </div>
     <p class="subtitle">Spot the Bug. Secure the Code.</p>
 
+    <div class="instructions">
+        <h3><i class="fas fa-info-circle"></i> Before You Begin</h3>
+        <ul>
+            <li><i class="fas fa-chrome"></i> Use <strong> &nbsp; Google Chrome &nbsp;</strong> for the best quiz experience.</li>
+            <li><i class="fas fa-desktop"></i> Complete the quiz on a <strong>laptop or desktop</strong> (not mobile).</li>
+            <li><i class="fas fa-window-maximize"></i> Keep this tab open — do not refresh or close mid-quiz.</li>
+            <li><i class="fas fa-database"></i> Your answers and score are saved automatically.</li>
+            <li><i class="fas fa-clock"></i> The quiz has <strong>10 quick questions</strong> — takes ~5–10 minutes.</li>
+            <li><i class="fas fa-trophy"></i> Submit at the end to appear on the <strong>Leaderboard</strong>.</li>
+        </ul>
+    </div>
+
     <p class="text-gray-400 text-sm mb-6">
         Welcome to <strong>Byte-Sized Battle</strong> — a coding challenge where your security instincts take center stage.<br/>
         Enter your details to begin!
     </p>
 
-    <form id="startForm" onsubmit="return startQuiz()">
+    <form id="startForm">
         <input type="text" id="name" placeholder="Employee Name" required/>
-        <input type="email" id="email" placeholder="Employee Email ID" required/>
+        <input type="email" id="email" placeholder="Employee Email ID (e.g., john.doe@company.com)" required/>
         <button id="submitbutton" type="submit" class="btn">Start Quiz</button>
     </form>
 
@@ -107,8 +146,6 @@
 </div>
 
 <script type="module">
-
-// Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
 
@@ -138,41 +175,45 @@ async function initFirebase() {
   }
 }
 
-document.getElementById("submitbutton").addEventListener("click", async (event) => {
+document.getElementById("startForm").addEventListener("submit", async (event) => {
   event.preventDefault();
   try {
-    await initFirebase(); // ensure Firebase is ready
-    startQuiz();          // proceed to quiz
+    await initFirebase();
+    startQuiz();
   } catch (error) {
-    console.error("❌ Error during button click:", error);
+    console.error("❌ Error during form submit:", error);
     alert("Something went wrong while starting the quiz. Please try again.");
   }
 });
 
 function startQuiz() {
-  try {
-    const name = document.getElementById('name').value.trim();
-    const email = document.getElementById('email').value.trim();
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
 
-    if (!name || !email) {
-      alert('Please enter both name and email.');
-      return false;
-    }
-
-    // Save locally
-    localStorage.setItem('employeeName', name);
-    localStorage.setItem('employeeEmail', email);
-
-    // Redirect to quiz
-    window.location.href = 'ChooseProgLanguage.html';
-    return false;
-  } catch (error) {
-    console.error("❌ Error starting quiz:", error);
-    alert("An unexpected error occurred while starting the quiz. Please refresh and try again.");
+  if (!name) {
+    alert('⚠️ Please enter your name.');
     return false;
   }
-}
 
+  // 🔐 Email validation (basic + optional domain restriction)
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/;
+  if (!emailPattern.test(email)) {
+    alert('⚠️ Please enter a valid email address.');
+    return false;
+  }
+
+  // Optional: Restrict to corporate domain (example)
+  // if (!email.endsWith("@siemens.com")) {
+  //   alert("⚠️ Please use your official Siemens email ID to participate.");
+  //   return false;
+  // }
+
+  localStorage.setItem('employeeName', name);
+  localStorage.setItem('employeeEmail', email);
+
+  window.location.href = 'ChooseProgLanguage.html';
+  return false;
+}
 </script>
 
 </body>

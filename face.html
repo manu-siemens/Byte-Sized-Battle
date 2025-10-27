@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Byte-Sized Battle - Start Quiz</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+        font-family: 'Montserrat', sans-serif;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .card {
+        background-color: #1e293b;
+        border-radius: 12px;
+        padding: 50px;
+        width: 550px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        text-align: center;
+    }
+    .logo {
+        display: inline-block;
+        background: linear-gradient(90deg, #2563eb, #3b82f6);
+        padding: 20px 30px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 2rem;
+        letter-spacing: 1px;
+        color: white;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        text-shadow: 0 0 10px #3b82f6;
+    }
+    .subtitle {
+        color: #9ca3af;
+        margin-bottom: 25px;
+    }
+    input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 8px;
+        border: none;
+        background-color: #2d3748;
+        color: #e0e0e0;
+        font-size: 1rem;
+    }
+    input:focus {
+        outline: none;
+        border: 1px solid #3b82f6;
+        background-color: #334155;
+    }
+    .btn {
+        background-color: #3b82f6;
+        color: white;
+        font-weight: 600;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 15px;
+        transition: background-color 0.3s ease;
+        width: 100%;
+    }
+    .btn:hover {
+        background-color: #2563eb;
+    }
+    .footer {
+        margin-top: 25px;
+        font-size: 0.85em;
+        color: #9ca3af;
+    }
+    .instructions {
+        text-align: left;
+        background-color: #111827;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 25px;
+        font-size: 0.95rem;
+    }
+    .instructions h3 {
+        font-weight: 700;
+        color: #3b82f6;
+        margin-bottom: 10px;
+    }
+    .instructions ul {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+    .instructions li {
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+    }
+    .instructions li i {
+        color: #60a5fa;
+        margin-right: 8px;
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <div class="logo">
+        <i class="fas fa-bug"></i> BYTE-SIZED BATTLE
+    </div>
+    <p class="subtitle">Spot the Bug. Secure the Code.</p>
+
+    <div class="instructions">
+        <h3><i class="fas fa-info-circle"></i> Before You Begin</h3>
+        <ul>
+            <li><i class="fas fa-chrome"></i> Use <strong> &nbsp; Google Chrome &nbsp;</strong> for the best quiz experience.</li>
+            <li><i class="fas fa-desktop"></i> Complete the quiz on a <strong>laptop or desktop</strong> (not mobile).</li>
+            <li><i class="fas fa-window-maximize"></i> Keep this tab open — do not refresh or close mid-quiz.</li>
+            <li><i class="fas fa-database"></i> Your answers and score are saved automatically.</li>
+            <li><i class="fas fa-clock"></i> The quiz has <strong>10 quick questions</strong> — takes ~5–10 minutes.</li>
+            <li><i class="fas fa-trophy"></i> Submit at the end to appear on the <strong>Leaderboard</strong>.</li>
+        </ul>
+    </div>
+
+    <p class="text-gray-400 text-sm mb-6">
+        Welcome to <strong>Byte-Sized Battle</strong> — a coding challenge where your security instincts take center stage.<br/>
+        Enter your details to begin!
+    </p>
+
+    <form id="startForm">
+        <input type="text" id="name" placeholder="Employee Name" required/>
+        <input type="email" id="email" placeholder="Employee Email ID (e.g., john.doe@company.com)" required/>
+        <button id="submitbutton" type="submit" class="btn">Start Quiz</button>
+    </form>
+
+    <div class="footer">
+        Stay Secure · Think Before You Code
+    </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
+
+let app;
+
+async function initFirebase() {
+  try {
+    if (!app) {
+      const firebaseConfig = {
+        apiKey: "AIzaSyCDxtG36Qeyhh1nfRypGPDOdvfQgO9_oIA",
+        authDomain: "byte-sized-battle.firebaseapp.com",
+        databaseURL: "https://byte-sized-battle-default-rtdb.firebaseio.com/",
+        projectId: "byte-sized-battle",
+        storageBucket: "byte-sized-battle.firebasestorage.app",
+        messagingSenderId: "278675191581",
+        appId: "1:278675191581:web:410e9faeebb804295453f4",
+        measurementId: "G-6QSQDBHR14"
+      };
+
+      app = initializeApp(firebaseConfig);
+      getAnalytics(app);
+      console.log("✅ Firebase initialized successfully.");
+    }
+  } catch (error) {
+    console.error("❌ Firebase initialization failed:", error);
+    alert("Error initializing Firebase. Please try again later.");
+  }
+}
+
+document.getElementById("startForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  try {
+    await initFirebase();
+    startQuiz();
+  } catch (error) {
+    console.error("❌ Error during form submit:", error);
+    alert("Something went wrong while starting the quiz. Please try again.");
+  }
+});
+
+function startQuiz() {
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+
+  if (!name) {
+    alert('⚠️ Please enter your name.');
+    return false;
+  }
+
+  // 🔐 Email validation (basic + optional domain restriction)
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$/;
+  if (!emailPattern.test(email)) {
+    alert('⚠️ Please enter a valid email address.');
+    return false;
+  }
+
+  // Optional: Restrict to corporate domain (example)
+  // if (!email.endsWith("@siemens.com")) {
+  //   alert("⚠️ Please use your official Siemens email ID to participate.");
+  //   return false;
+  // }
+
+  localStorage.setItem('employeeName', name);
+  localStorage.setItem('employeeEmail', email);
+
+  window.location.href = 'ChooseProgLanguage.html';
+  return false;
+}
+</script>
+
+</body>
+</html>

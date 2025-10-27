@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Byte-Sized Battle - Start Quiz</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+    body {
+        background-color: #121212;
+        color: #e0e0e0;
+        font-family: 'Montserrat', sans-serif;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .card {
+        background-color: #1e293b;
+        border-radius: 12px;
+        padding: 50px;
+        width: 500px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        text-align: center;
+    }
+    .logo {
+        display: inline-block;
+        background: linear-gradient(90deg, #2563eb, #3b82f6);
+        padding: 20px 30px;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 2rem;
+        letter-spacing: 1px;
+        color: white;
+        margin-bottom: 20px;
+        text-transform: uppercase;
+        text-shadow: 0 0 10px #3b82f6;
+    }
+    .subtitle {
+        color: #9ca3af;
+        margin-bottom: 25px;
+    }
+    input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 8px;
+        border: none;
+        background-color: #2d3748;
+        color: #e0e0e0;
+        font-size: 1rem;
+    }
+    input:focus {
+        outline: none;
+        border: 1px solid #3b82f6;
+        background-color: #334155;
+    }
+    .btn {
+        background-color: #3b82f6;
+        color: white;
+        font-weight: 600;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 15px;
+        transition: background-color 0.3s ease;
+        width: 100%;
+    }
+    .btn:hover {
+        background-color: #2563eb;
+    }
+    .footer {
+        margin-top: 25px;
+        font-size: 0.85em;
+        color: #9ca3af;
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <div class="logo">
+        <i class="fas fa-bug"></i> BYTE-SIZED BATTLE
+    </div>
+    <p class="subtitle">Spot the Bug. Secure the Code.</p>
+
+    <p class="text-gray-400 text-sm mb-6">
+        Welcome to <strong>Byte-Sized Battle</strong> — a coding challenge where your security instincts take center stage.<br/>
+        Enter your details to begin!
+    </p>
+
+    <form id="startForm" onsubmit="return startQuiz()">
+        <input type="text" id="name" placeholder="Employee Name" required/>
+        <input type="email" id="email" placeholder="Employee Email ID" required/>
+        <button id="submitbutton" type="submit" class="btn">Start Quiz</button>
+    </form>
+
+    <div class="footer">
+        Stay Secure · Think Before You Code
+    </div>
+</div>
+
+<script type="module">
+
+// Import Firebase modules
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
+
+let app;
+
+async function initFirebase() {
+  try {
+    if (!app) {
+      const firebaseConfig = {
+        apiKey: "AIzaSyCDxtG36Qeyhh1nfRypGPDOdvfQgO9_oIA",
+        authDomain: "byte-sized-battle.firebaseapp.com",
+        databaseURL: "https://byte-sized-battle-default-rtdb.firebaseio.com/",
+        projectId: "byte-sized-battle",
+        storageBucket: "byte-sized-battle.firebasestorage.app",
+        messagingSenderId: "278675191581",
+        appId: "1:278675191581:web:410e9faeebb804295453f4",
+        measurementId: "G-6QSQDBHR14"
+      };
+
+      app = initializeApp(firebaseConfig);
+      getAnalytics(app);
+      console.log("✅ Firebase initialized successfully.");
+    }
+  } catch (error) {
+    console.error("❌ Firebase initialization failed:", error);
+    alert("Error initializing Firebase. Please try again later.");
+  }
+}
+
+document.getElementById("submitbutton").addEventListener("click", async (event) => {
+  event.preventDefault();
+  try {
+    await initFirebase(); // ensure Firebase is ready
+    startQuiz();          // proceed to quiz
+  } catch (error) {
+    console.error("❌ Error during button click:", error);
+    alert("Something went wrong while starting the quiz. Please try again.");
+  }
+});
+
+function startQuiz() {
+  try {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+
+    if (!name || !email) {
+      alert('Please enter both name and email.');
+      return false;
+    }
+
+    // Save locally
+    localStorage.setItem('employeeName', name);
+    localStorage.setItem('employeeEmail', email);
+
+    // Redirect to quiz
+    window.location.href = 'ChooseProgLanguage.html';
+    return false;
+  } catch (error) {
+    console.error("❌ Error starting quiz:", error);
+    alert("An unexpected error occurred while starting the quiz. Please refresh and try again.");
+    return false;
+  }
+}
+
+</script>
+
+</body>
+</html>
